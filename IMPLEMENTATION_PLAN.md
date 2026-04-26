@@ -1,5 +1,5 @@
 # Photobooth App — Implementatieplan
-## Verjaardagsthema: Loïs wordt 13!
+## Verjaardagsthema: Loïs wordt 13!!
 
 **Doelplatform:** iOS 16+  
 **Taal:** Swift 5.9  
