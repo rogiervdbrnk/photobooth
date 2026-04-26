@@ -26,6 +26,7 @@
 13. [Stap 11 — Testen](#stap-11--testen)
 14. [Technische beslissingen & richtlijnen](#technische-beslissingen--richtlijnen)
 15. [Template ontwerpen (visueel)](#template-ontwerpen-visueel)
+16. [Stap 12 — Uitbreidingsplan fase 2](#stap-12--uitbreidingsplan-fase-2)
 
 ---
 
@@ -1663,3 +1664,646 @@ Zie het bestand [TEMPLATE_DESIGNS.md](./TEMPLATE_DESIGNS.md) voor de volledige v
 12. **Testen + bugfixes** (Stap 11) — ~60 min
 
 **Totale schatting: ± 8 uur voor een junior engineer.**
+
+---
+
+## Stap 12 — Uitbreidingsplan fase 2
+
+Deze stap beschrijft een veilige uitbreiding op de bestaande app voor vier nieuwe features:
+
+1. meerdere achtergronden voor de fotostrip zelf
+2. tekst op de uiteindelijke fotostrip aanpassen vanuit het resultaatscherm
+3. fotofilters zoals zwart-wit, sepia en andere populaire filters
+4. feestelijke achtergronden of frames rondom de foto's in de strip
+
+### Belangrijke scope-keuze
+
+> **Aanname voor deze fase:** “party backgrounds voor de foto's zelf” betekent **decoratieve achtergronden, kaders of overlays rondom de fotovakken in de strip**, niet het automatisch vervangen van de echte achtergrond van een persoon op de foto.
+
+Waarom deze keuze:
+
+- automatische achtergrondvervanging vereist onderwerpsegmentatie of ML
+- dat maakt de implementatie veel complexer en foutgevoeliger
+- decoratieve party-achtergronden passen wel goed binnen de bestaande SwiftUI-template-architectuur
+
+Als later toch echte achtergrondvervanging gewenst is, behandel dat als een **aparte fase 3**.
+
+---
+
+## 12.1 Doelarchitectuur voor deze uitbreiding
+
+De huidige app rendert een strip op basis van:
+
+- `PhotoboothSession.configuration`
+- `PhotoboothSession.capturedPhotos`
+- `PhotoboothSession.stripText`
+
+Voor de nieuwe features moet de sessie ook de gekozen visuele stijl bewaren. Voeg daarom expliciete style-modellen toe in plaats van losse strings of booleans.
+
+### Nieuwe modellen
+
+Voeg deze bestanden toe onder `Photobooth/Models/`:
+
+```swift
+// StripBackgroundStyle.swift
+enum StripBackgroundStyle: String, CaseIterable, Identifiable, Codable {
+    case classicWhite
+    case pinkParty
+    case goldConfetti
+    case purpleStars
+    case rainbowCake
+
+    var id: String { rawValue }
+}
+
+// PhotoFilterOption.swift
+enum PhotoFilterOption: String, CaseIterable, Identifiable, Codable {
+    case original
+    case mono
+    case noir
+    case sepia
+    case chrome
+    case fade
+
+    var id: String { rawValue }
+}
+
+// PhotoFrameStyle.swift
+enum PhotoFrameStyle: String, CaseIterable, Identifiable, Codable {
+    case none
+    case balloons
+    case confetti
+    case stars
+    case disco
+
+    var id: String { rawValue }
+}
+```
+
+### Uitbreiding van `PhotoboothSession`
+
+Breid `PhotoboothSession.swift` uit met:
+
+```swift
+var stripBackgroundStyle: StripBackgroundStyle
+var photoFilter: PhotoFilterOption
+var photoFrameStyle: PhotoFrameStyle
+```
+
+Nieuwe initializer:
+
+```swift
+init(
+    configuration: ShotConfiguration,
+    stripText: String,
+    stripBackgroundStyle: StripBackgroundStyle = .classicWhite,
+    photoFilter: PhotoFilterOption = .original,
+    photoFrameStyle: PhotoFrameStyle = .none
+)
+```
+
+### Waarom dit belangrijk is
+
+- alle renderlogica krijgt één bron van waarheid
+- de gekozen stijl blijft behouden tussen camera- en resultaatscherm
+- het maakt later opslaan, delen en testen veel eenvoudiger
+
+---
+
+## 12.2 Nieuwe services en verantwoordelijkheden
+
+Voeg niet alle logica direct in de SwiftUI views toe. Houd de pipeline opgesplitst in drie verantwoordelijkheden.
+
+### A. `PhotoFilterService.swift`
+
+Maak een nieuwe service onder `Photobooth/Services/PhotoFilterService.swift`.
+
+Verantwoordelijkheid:
+
+- neemt een `UIImage`
+- past een filter toe op basis van `PhotoFilterOption`
+- geeft een nieuw `UIImage` terug
+
+Aanbevolen techniek:
+
+- gebruik `CoreImage`
+- houd alle filtermapping in één plek
+
+Voorbeeldstructuur:
+
+```swift
+import CoreImage
+import CoreImage.CIFilterBuiltins
+import UIKit
+
+final class PhotoFilterService {
+    private let context = CIContext()
+
+    func applyFilter(_ option: PhotoFilterOption, to image: UIImage) -> UIImage {
+        guard option != .original,
+              let inputCIImage = CIImage(image: image)
+        else { return image }
+
+        let outputImage: CIImage?
+
+        switch option {
+        case .original:
+            outputImage = inputCIImage
+        case .mono:
+            let filter = CIFilter.photoEffectMono()
+            filter.inputImage = inputCIImage
+            outputImage = filter.outputImage
+        case .noir:
+            let filter = CIFilter.photoEffectNoir()
+            filter.inputImage = inputCIImage
+            outputImage = filter.outputImage
+        case .sepia:
+            let filter = CIFilter.sepiaTone()
+            filter.inputImage = inputCIImage
+            filter.intensity = 0.9
+            outputImage = filter.outputImage
+        case .chrome:
+            let filter = CIFilter.photoEffectChrome()
+            filter.inputImage = inputCIImage
+            outputImage = filter.outputImage
+        case .fade:
+            let filter = CIFilter.photoEffectFade()
+            filter.inputImage = inputCIImage
+            outputImage = filter.outputImage
+        }
+
+        guard let outputImage,
+              let cgImage = context.createCGImage(outputImage, from: outputImage.extent)
+        else { return image }
+
+        return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
+    }
+}
+```
+
+### B. `TemplateStyleResolver.swift`
+
+Maak een nieuwe helper of service onder `Photobooth/Services/TemplateStyleResolver.swift`.
+
+Verantwoordelijkheid:
+
+- vertaalt `StripBackgroundStyle` naar kleuren, gradients, textures en decoraties
+- voorkomt dat elke template dezelfde `switch`-blokken opnieuw moet implementeren
+
+Voorbeeld van outputmodel:
+
+```swift
+struct TemplateStyleDefinition {
+    let backgroundGradient: LinearGradient?
+    let backgroundColor: Color
+    let textColor: Color
+    let accentColor: Color
+    let secondaryAccentColor: Color
+}
+```
+
+### C. `PhotoCompositionService.swift` of `PhotoSlotView.swift`
+
+Voor feestelijke achtergronden rondom foto's zijn er twee goede opties:
+
+1. een service die per foto een samengestelde `UIImage` bouwt
+2. een herbruikbare SwiftUI `PhotoSlotView` die foto + frame + overlay tekent
+
+Voor deze app is optie 2 beter, omdat de strip toch al via SwiftUI wordt gerenderd.
+
+Maak daarom liever:
+
+- `Photobooth/Components/PhotoSlotView.swift`
+
+Deze component moet:
+
+- een `UIImage?` ontvangen
+- een `PhotoFrameStyle` ontvangen
+- een vaste maat ontvangen
+- de foto tekenen
+- decoratieve overlay of achtergrond toevoegen
+
+---
+
+## 12.3 Nieuwe UI-flow
+
+De bestaande flow is:
+
+```text
+ShotSelectionView -> CameraView -> ResultView
+```
+
+Voor deze uitbreiding is de veiligste route:
+
+```text
+ShotSelectionView
+  -> CameraView
+  -> ResultView
+       -> pas hier live aan:
+          - striptekst
+          - stripachtergrond
+          - filter
+          - party frame / photo background
+```
+
+### Waarom niet al vóór de camera alles kiezen?
+
+- filters en stijlen wil de gebruiker meestal zien op een echte preview
+- minder keuzes op het startscherm houdt de flow sneller
+- de bestaande selectieflow wordt nauwelijks verstoord
+
+### Wat blijft wel op het startscherm?
+
+- aantal foto's
+- initiële striptekst
+
+### Wat wordt nieuw op het resultaatscherm?
+
+- tekstveld om striptekst aan te passen
+- horizontale keuzerij voor stripachtergrond
+- horizontale keuzerij voor filter
+- horizontale keuzerij voor party frame / photo background
+- live her-render van de preview bij elke wijziging
+
+---
+
+## 12.4 Stap-voor-stap implementatie
+
+### Stap 12.4.1 — Breid de domeinmodellen uit
+
+**Bestanden aanpassen:**
+
+- `Photobooth/Models/PhotoboothSession.swift`
+
+**Bestanden toevoegen:**
+
+- `Photobooth/Models/StripBackgroundStyle.swift`
+- `Photobooth/Models/PhotoFilterOption.swift`
+- `Photobooth/Models/PhotoFrameStyle.swift`
+
+**Taken:**
+
+1. Voeg de drie enums toe.
+2. Voeg drie nieuwe properties toe aan `PhotoboothSession`.
+3. Geef alle nieuwe properties een veilige defaultwaarde.
+4. Controleer dat bestaande flow niet breekt wanneer er nog niets expliciet gekozen wordt.
+
+**Acceptatiecriteria:**
+
+- app compileert nog zonder UI-wijzigingen
+- bestaande rendering blijft wit en ongefilterd zolang defaults actief zijn
+
+### Stap 12.4.2 — Voeg filterondersteuning toe
+
+**Bestanden toevoegen:**
+
+- `Photobooth/Services/PhotoFilterService.swift`
+
+**Taken:**
+
+1. Maak een service op basis van `CoreImage`.
+2. Ondersteun eerst alleen deze filters:
+   - `original`
+   - `mono`
+   - `noir`
+   - `sepia`
+   - `chrome`
+   - `fade`
+3. Zorg dat een mislukte filterbewerking altijd terugvalt op de originele foto.
+4. Schrijf minstens één unit test per filtertype of per mappinggroep.
+
+**Belangrijke technische regel:**
+
+- filter de **originele captured photos** opnieuw bij elke keuze
+- filter nooit een al gefilterde output opnieuw
+
+Anders stapelen filters op en krijg je kwaliteitsverlies.
+
+### Stap 12.4.3 — Introduceer een herbruikbare `PhotoSlotView`
+
+**Bestanden toevoegen:**
+
+- `Photobooth/Components/PhotoSlotView.swift`
+
+**Verantwoordelijkheid van deze view:**
+
+- foto tonen of placeholder tonen
+- optioneel filter toepassen op de foto die getoond wordt
+- decoratieve party-stijl rondom of achter de foto tekenen
+- één uniforme layout-aanpak voor 1-, 2- en 3-shot templates afdwingen
+
+**Aanbevolen input API:**
+
+```swift
+struct PhotoSlotView: View {
+    let image: UIImage?
+    let size: CGSize
+    let filter: PhotoFilterOption
+    let frameStyle: PhotoFrameStyle
+}
+```
+
+**Taken:**
+
+1. Bouw eerst alleen `.none` en `.confetti`.
+2. Voeg daarna `.balloons`, `.stars` en `.disco` toe.
+3. Houd de foto zelf rechthoekig en voorspelbaar; voeg decoratie daaromheen toe.
+4. Gebruik bestaande decoratieve views waar mogelijk, zoals `ConfettiPatternView`.
+
+### Stap 12.4.4 — Maak stripachtergronden configureerbaar
+
+**Bestanden toevoegen:**
+
+- `Photobooth/Services/TemplateStyleResolver.swift`
+
+**Bestanden aanpassen:**
+
+- `Photobooth/Templates/OneShotTemplateView.swift`
+- `Photobooth/Templates/TwoShotTemplateView.swift`
+- `Photobooth/Templates/ThreeShotTemplateView.swift`
+
+**Taken:**
+
+1. Maak een centrale style-resolver voor `StripBackgroundStyle`.
+2. Vervang de harde `Color.white` in de templates door een achtergrond uit de resolver.
+3. Vervang de directe `Image(uiImage:)` blokken door `PhotoSlotView`.
+4. Zorg dat tekstkleur mee verandert wanneer een donkere achtergrond gekozen wordt.
+5. Zorg dat de gekozen background style in alle drie templates consistent voelt.
+
+**Ontwerpregel:**
+
+- houd layout, marges en formaten hetzelfde
+- verander alleen stijl, niet de maatvoering van de strip
+
+Zo voorkom je regressies in rendering en delen.
+
+### Stap 12.4.5 — Maak tekst aanpasbaar op het resultaatscherm
+
+De huidige code ondersteunt al een eerste invoer van `stripText` op `ShotSelectionView`, maar de gebruiker kan die tekst nog niet live aanpassen op het resultaatscherm.
+
+**Bestanden aanpassen:**
+
+- `Photobooth/ViewModels/ResultViewModel.swift`
+- `Photobooth/Views/ResultView.swift`
+
+**Benodigde viewmodel-wijzigingen:**
+
+Voeg tijdelijke edit-state toe:
+
+```swift
+var editableStripText: String
+var selectedBackgroundStyle: StripBackgroundStyle
+var selectedFilter: PhotoFilterOption
+var selectedPhotoFrameStyle: PhotoFrameStyle
+```
+
+Initialiseer deze waarden vanuit `session`.
+
+**Belangrijke ontwerpkeuze:**
+
+- `ResultViewModel` mag een **draft state** beheren
+- bij elke wijziging rendert de preview opnieuw
+- pas pas bij delen of opnieuw opslaan de sessie definitief aan, of houd de session direct synchroon als dat eenvoudiger is
+
+Voor een junior engineer is direct synchroniseren het eenvoudigst:
+
+1. wijzig selectie in de UI
+2. schrijf nieuwe waarde direct naar `session`
+3. roep `renderTemplate()` opnieuw aan
+
+### Stap 12.4.6 — Voeg een editorpaneel toe aan `ResultView`
+
+**Nieuwe UI-elementen in `ResultView.swift`:**
+
+- `TextField` of `TextEditor` voor striptekst
+- horizontale `ScrollView` met filterchips
+- horizontale `ScrollView` met achtergrondchips
+- horizontale `ScrollView` met framechips
+
+**Aanbevolen componenten om toe te voegen:**
+
+- `Photobooth/Components/OptionChip.swift`
+- `Photobooth/Components/StylePreviewCard.swift`
+
+**Taken:**
+
+1. Plaats editorcontrols onder de preview en boven de actieknoppen.
+2. Laat iedere wijziging de preview live verversen.
+3. Laat tijdens re-render een kleine loading state zien als dat nodig is.
+4. Houd de share- en save-knoppen disabled als renderen bezig is.
+
+**UX-regel:**
+
+- auto-save niet bij elke kleine tekstwijziging opnieuw uitvoeren
+
+Beter patroon:
+
+- render preview live
+- sla opnieuw op wanneer de gebruiker op delen tikt of wanneer de user expliciet op “Opslaan” tikt
+
+Als je de bestaande auto-save houdt, voeg dan debounce toe zodat de fotobibliotheek niet steeds opnieuw beschreven wordt.
+
+### Stap 12.4.7 — Pas de renderpipeline aan
+
+**Bestanden aanpassen:**
+
+- `Photobooth/ViewModels/ResultViewModel.swift`
+- eventueel `Photobooth/Services/TemplateRenderer.swift`
+
+**Taken:**
+
+1. Laat `renderTemplate()` altijd renderen op basis van de actuele session-style instellingen.
+2. Zorg dat filterapplicatie niet in `ResultView` gebeurt, maar binnen template- of componentlogica.
+3. Maak een aparte methode `rerenderPreview()` die veilig meerdere keren mag worden aangeroepen.
+4. Voorkom dat meerdere render-acties tegelijk lopen.
+
+Aanbevolen patroon:
+
+```swift
+private var renderTask: Task<Void, Never>?
+
+func rerenderPreview() {
+    renderTask?.cancel()
+    renderTask = Task { @MainActor in
+        renderedImage = nil
+        renderTemplate()
+    }
+}
+```
+
+### Stap 12.4.8 — Werk de startflow alleen minimaal bij
+
+**Bestanden aanpassen indien nodig:**
+
+- `Photobooth/ViewModels/ShotSelectionViewModel.swift`
+- `Photobooth/App/AppCoordinator.swift`
+
+Voor deze fase hoeft het startscherm alleen te blijven doen wat het nu al doet:
+
+- aantal shots kiezen
+- initiële striptekst meegeven
+
+Voeg hier nog geen filters of achtergrondkeuzes toe. Dat houdt de eerste interactie simpel.
+
+### Stap 12.4.9 — Voeg assets toe voor preview en decoratie
+
+**Aanbevolen nieuwe assets in `Assets.xcassets`:**
+
+- `PartyConfettiPattern`
+- `PartyStarsPattern`
+- `PartyBalloonsPattern`
+- `PartyDiscoPattern`
+
+Gebruik deze assets alleen als de visuele kwaliteit beter is dan volledig SwiftUI-getekende decoratie. Anders is het beter om decoratie vectorachtig in SwiftUI te houden.
+
+### Stap 12.4.10 — Testen
+
+Voeg nieuwe tests toe voor regressiepreventie.
+
+**Unit tests:**
+
+- `PhotoFilterServiceTests.swift`
+- `TemplateStyleResolverTests.swift`
+- `PhotoboothSessionTests.swift` uitbreiden voor default style-waarden
+
+**UI tests:**
+
+- wijzig striptekst op resultaatscherm en controleer of preview vernieuwt
+- kies een filter en controleer dat preview verandert
+- kies een andere stripachtergrond en controleer dat preview verandert
+- kies een photo frame style en controleer dat preview verandert
+
+**Handmatige checklist:**
+
+- [ ] Preview vernieuwt bij tekstwijziging
+- [ ] Preview vernieuwt bij filterwijziging
+- [ ] Preview vernieuwt bij achtergrondwijziging
+- [ ] Preview vernieuwt bij framewijziging
+- [ ] Delen gebruikt de laatst getoonde preview
+- [ ] Opslaan gebruikt de laatst getoonde preview
+- [ ] Originele captured photos blijven intern ongewijzigd
+- [ ] Alle stijlen werken voor 1, 2 en 3 foto's
+
+---
+
+## 12.5 File-by-file werkpakket
+
+### Nieuwe bestanden
+
+```text
+Photobooth/
+├── Models/
+│   ├── StripBackgroundStyle.swift
+│   ├── PhotoFilterOption.swift
+│   └── PhotoFrameStyle.swift
+├── Services/
+│   ├── PhotoFilterService.swift
+│   └── TemplateStyleResolver.swift
+└── Components/
+    ├── PhotoSlotView.swift
+    ├── OptionChip.swift
+    └── StylePreviewCard.swift
+```
+
+### Bestaande bestanden die aangepast moeten worden
+
+```text
+Photobooth/
+├── Models/
+│   └── PhotoboothSession.swift
+├── ViewModels/
+│   └── ResultViewModel.swift
+├── Views/
+│   └── ResultView.swift
+└── Templates/
+    ├── OneShotTemplateView.swift
+    ├── TwoShotTemplateView.swift
+    └── ThreeShotTemplateView.swift
+```
+
+---
+
+## 12.6 Aanbevolen implementatievolgorde voor een junior engineer
+
+Voer dit uit in kleine, controleerbare pull requests.
+
+### PR 1 — Domeinlaag voorbereiden
+
+- nieuwe enums toevoegen
+- `PhotoboothSession` uitbreiden
+- defaults instellen
+- tests laten slagen
+
+### PR 2 — Filterservice
+
+- `PhotoFilterService` bouwen
+- unit tests toevoegen
+- nog geen UI koppelen
+
+### PR 3 — `PhotoSlotView`
+
+- herbruikbare slot-component bouwen
+- placeholder, filter en 1 decoratieve stijl implementeren
+
+### PR 4 — Templates migreren
+
+- templates omzetten van directe `Image(uiImage:)` rendering naar `PhotoSlotView`
+- strip background styles toevoegen via resolver
+
+### PR 5 — Result editor UI
+
+- tekst aanpassen in `ResultView`
+- filter/background/frame pickers toevoegen
+- live her-rendering aansluiten
+
+### PR 6 — Save/share stabiliseren
+
+- renderdebounce of state-guard toevoegen
+- controleren dat delen en opslaan altijd de laatste preview gebruiken
+
+### PR 7 — Testen en polish
+
+- UI tests uitbreiden
+- visuele randgevallen oplossen
+- Nederlandse labels finaliseren
+
+---
+
+## 12.7 Technische valkuilen die je expliciet moet vermijden
+
+1. Pas filters nooit destructief toe op `capturedPhotos`; bewaar die altijd origineel.
+2. Stop geen Core Image code direct in SwiftUI views; houd dat in een service.
+3. Vermijd duplicate style-switches in elke template; gebruik een resolver of style-definition.
+4. Trigger niet bij elke toetsaanslag direct een save naar Photos; render preview en save pas later.
+5. Voeg niet meteen te veel filters toe; start met 5 tot 6 bewezen opties.
+6. Maak de feature voor party photo backgrounds niet afhankelijk van AI of subject cutout in deze fase.
+
+---
+
+## 12.8 Schatting voor fase 2
+
+| Onderdeel | Schatting |
+|---|---:|
+| Nieuwe modellen + session update | 30-45 min |
+| Filterservice + tests | 60-90 min |
+| `PhotoSlotView` + decoratieve styles | 90-120 min |
+| Template style resolver + template updates | 60-90 min |
+| Result editor UI + live rerender | 120-180 min |
+| Save/share stabilisatie | 45-60 min |
+| UI tests + handmatige polish | 60-90 min |
+
+**Totale schatting fase 2: ± 8 tot 11 uur voor een junior engineer, exclusief extra design-iteraties.**
+
+---
+
+## 12.9 Definition of done
+
+Deze uitbreiding is klaar wanneer:
+
+- de gebruiker op het resultaatscherm de striptekst kan aanpassen
+- de gebruiker minimaal 4 stripachtergronden kan kiezen
+- de gebruiker minimaal 5 filters kan kiezen
+- de gebruiker minimaal 4 party photo frame styles kan kiezen
+- preview, delen en opslaan steeds exact dezelfde eindweergave gebruiken
+- alle keuzes werken voor 1, 2 en 3 foto-layouts
+- bestaande flow zonder regressies blijft werken

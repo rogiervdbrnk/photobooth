@@ -20,38 +20,23 @@ struct ShotSelectionView: View {
 
                 // ── Titel ────────────────────────────────────────
                 VStack(spacing: 8) {
-                    Text("Photostrip")
+                    Text(String(localized: "start.title"))
                         .font(.system(size: 46, weight: .heavy, design: .rounded))
                         .foregroundStyle(Color("BirthdayGold"))
                         .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
                 }
                 .padding(.top, 60)
 
-                // ── Strip-tekst ──────────────────────────────────
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Tekst op de fotostrip")
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(.white)
-
-                    TextField("bijv. 🎉 Loïs is 13 jaar! 🎉", text: $viewModel.stripText)
-                        .font(.body)
-                        .foregroundStyle(.white)
-                        .tint(Color("BirthdayGold"))
-                        .padding(14)
-                        .background(.white.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(.white.opacity(0.25), lineWidth: 1)
-                        )
-                }
-                .padding(.horizontal, 24)
-
                 // ── Shot-keuze ───────────────────────────────────
                 VStack(spacing: 16) {
-                    Text("Hoeveel foto's wil je maken?")
+                    Text(String(localized: "start.shot_count_prompt"))
                         .font(.title3.weight(.semibold))
                         .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.9)
+                        .frame(maxWidth: .infinity)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     ForEach(ShotConfiguration.allCases) { config in
                         ShotOptionCard(
@@ -71,7 +56,7 @@ struct ShotSelectionView: View {
                 // ── Doorgaan-knop ────────────────────────────────
                 Button(action: viewModel.confirm) {
                     HStack(spacing: 12) {
-                        Text("Start de photostrip!")
+                        Text(String(localized: "start.cta"))
                             .font(.title3.weight(.bold))
                         Image(systemName: "camera.fill")
                             .font(.title3)
@@ -87,9 +72,9 @@ struct ShotSelectionView: View {
                 .padding(.bottom, 48)
             }
         }
-        .alert("Toestemming vereist", isPresented: $viewModel.showPermissionAlert) {
-            Button("Open Instellingen") { viewModel.openSettings() }
-            Button("Annuleer", role: .cancel) {}
+        .alert(String(localized: "alert.permission_required"), isPresented: $viewModel.showPermissionAlert) {
+            Button(String(localized: "alert.open_settings")) { viewModel.openSettings() }
+            Button(String(localized: "common.cancel"), role: .cancel) {}
         } message: {
             Text(viewModel.permissionError ?? "")
         }

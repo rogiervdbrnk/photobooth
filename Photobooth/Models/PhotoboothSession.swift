@@ -4,12 +4,24 @@ import UIKit
 @Observable
 final class PhotoboothSession {
     let configuration: ShotConfiguration
-    let stripText: String
+    var stripText: String
+    var stripBackgroundStyle: StripBackgroundStyle
+    var photoFilter: PhotoFilterOption
+    var photoFrameStyle: PhotoFrameStyle
     private(set) var capturedPhotos: [UIImage] = []
 
-    init(configuration: ShotConfiguration, stripText: String) {
+    init(
+        configuration: ShotConfiguration,
+        stripText: String,
+        stripBackgroundStyle: StripBackgroundStyle = .classicWhite,
+        photoFilter: PhotoFilterOption = .original,
+        photoFrameStyle: PhotoFrameStyle = .none
+    ) {
         self.configuration = configuration
         self.stripText = stripText
+        self.stripBackgroundStyle = stripBackgroundStyle
+        self.photoFilter = photoFilter
+        self.photoFrameStyle = photoFrameStyle
     }
 
     var totalShots: Int { configuration.rawValue }

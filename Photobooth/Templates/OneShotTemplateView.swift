@@ -4,51 +4,41 @@ import SwiftUI
 struct OneShotTemplateView: View {
     let photos: [UIImage]
     let stripText: String
+    let stripBackgroundStyle: StripBackgroundStyle
+    let photoFilter: PhotoFilterOption
+    let photoFrameStyle: PhotoFrameStyle
 
     var body: some View {
+        let style = TemplateStyleResolver.resolve(stripBackgroundStyle)
+
         ZStack {
-            Color.white
+            TemplateStyleResolver.backgroundView(for: stripBackgroundStyle)
 
             VStack(spacing: 16) {
 
                 // ── Foto met witte rand ──────────────────────────
-                if let photo = photos.first {
-                    Image(uiImage: photo)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 368, height: 412)
-                        .clipped()
-                } else {
-                    placeholderRect(width: 368, height: 412)
-                }
+                PhotoSlotView(
+                    image: photos.first,
+                    size: CGSize(width: 368, height: 412),
+                    filter: photoFilter,
+                    frameStyle: photoFrameStyle
+                )
 
                 // ── Onderbalk ────────────────────────────────────
                 ZStack {
-                    Color.white
+                    style.textPanelBackgroundColor
                     Text(stripText)
                         .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .foregroundStyle(.black)
+                        .foregroundStyle(style.textColor)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 16)
                         .frame(width: 400, height: 100)
                 }
                 .frame(width: 400, height: 100)
+                .overlay(Rectangle().fill(style.borderColor).frame(height: 1), alignment: .top)
             }
             .padding(.vertical, 16)
         }
         .frame(width: 400, height: 560)
     }
-}
-
-// MARK: - Placeholder hulpfunctie
-
-private func placeholderRect(width: CGFloat, height: CGFloat) -> some View {
-    RoundedRectangle(cornerRadius: 0)
-        .fill(Color(hex: "#E0E0E0"))
-        .frame(width: width, height: height)
-        .overlay(
-            Image(systemName: "camera.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(Color(hex: "#BDBDBD"))
-        )
 }

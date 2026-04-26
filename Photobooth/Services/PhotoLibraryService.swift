@@ -1,3 +1,4 @@
+import Foundation
 import Photos
 import UIKit
 
@@ -9,7 +10,7 @@ final class PhotoLibraryService {
 
         var errorDescription: String? {
             if case .saveFailed(let e) = self {
-                return "Opslaan mislukt: \(e.localizedDescription)"
+                return String(localized: "photo_library_error.save_failed") + ": \(e.localizedDescription)"
             }
             return nil
         }

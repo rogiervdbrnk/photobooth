@@ -32,11 +32,7 @@ final class CameraViewModel {
             self.error = error.localizedDescription
             return
         }
-        // Kleine vertraging zodat de preview-layer klaar is voor de eerste aftelling
-        Task {
-            try? await Task.sleep(for: .milliseconds(800))
-            startCountdownAndCapture()
-        }
+
     }
 
     func onDisappear() {

@@ -10,6 +10,9 @@
 		046BA007DF63372C6539AF8F /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98CB5458DCF88EDF805A36D /* Color+Hex.swift */; };
 		064AAEDCF234CBE25298D7AB /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C543D61AF86E4C366C1A802 /* AppRootView.swift */; };
 		0F8D79C232A0BF630618C37A /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEBCB8214D0423DCE1B3230E /* CameraPreviewView.swift */; };
+		1107C9668B312E6FD9559EC4 /* PhotoFrameStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F6D403C3E4B63879F6F713 /* PhotoFrameStyle.swift */; };
+		18D8B6203922468A3134CF5D /* StylePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91CC45E45774C15363E0CCB /* StylePreviewCard.swift */; };
+		249770081D1A815A53BA60A6 /* PhotoSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D6EAB0C1EF800B0E0F86A /* PhotoSlotView.swift */; };
 		2C4262D007EFD1D06D2CFD93 /* TemplateDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = E949C55C56062D5F6C2161FF /* TemplateDecorations.swift */; };
 		36EE0DECAA6ADE53D404BCEE /* PhotoboothSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7860C6F3B2FCBEE0B58B53DC /* PhotoboothSession.swift */; };
 		46C03F66915C9EEC1154E6D2 /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21E8A2D23DE2D165B95A9AE /* PhotoLibraryService.swift */; };
@@ -17,9 +20,14 @@
 		5D9F97F3462C24D2EF68C375 /* ShotSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE133ECC5865EC4DA2FB24D /* ShotSelectionView.swift */; };
 		5FC46A8D21FFB0EBF144EC74 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C83C524B85CA881F3BD605EA /* Photos.framework */; };
 		6996CB5058664299748FEA28 /* ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A04B931EE2C357D07DC838 /* ResultView.swift */; };
+		6D8F52042A6EF3F1A632B0E8 /* PhotoFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4C17DCAB11F325F2A55C96 /* PhotoFilterOption.swift */; };
+		748C084AFD69B06A337D2786 /* PhotoFilterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1025D4697E4FA2EF554FE7A /* PhotoFilterService.swift */; };
 		7D5EA008D200DDEE234EFF49 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26790881AAAAC102C8D380A0 /* CameraViewModel.swift */; };
+		83FC534F64D35A1D0DCBF9CC /* TemplateStyleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A0DA4384D8C16BB93FE46A4 /* TemplateStyleResolver.swift */; };
+		84E0A2F65FE2B7C3E3E95D14 /* StripBackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89528E5B567BA7C9062A96C0 /* StripBackgroundStyle.swift */; };
 		8667A4A1205BE45788A2B1B0 /* ShotProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7887673F44D14E7EB7C813D /* ShotProgressView.swift */; };
 		93F47B6D84ABE7373FB75594 /* ShotSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7495A25C2A29411C53D1C27 /* ShotSelectionViewModel.swift */; };
+		9A70C94A1BC77BF7F8D7B2FA /* OptionChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1670930E8A77572F9858357D /* OptionChip.swift */; };
 		A17D25A107ACA2A59D6D84BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF0B9612E227B09C4A4046D5 /* Assets.xcassets */; };
 		A1D232D9B1C680AF8703F69B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1347057F4451C1D404660FA /* AVFoundation.framework */; };
 		A7FAA037B016E0F3B03AAF29 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418ADC77701C964D485CF7BB /* PermissionService.swift */; };
@@ -48,11 +56,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1670930E8A77572F9858357D /* OptionChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionChip.swift; sourceTree = "<group>"; };
+		169D6EAB0C1EF800B0E0F86A /* PhotoSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSlotView.swift; sourceTree = "<group>"; };
 		1C543D61AF86E4C366C1A802 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
+		1E4C17DCAB11F325F2A55C96 /* PhotoFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFilterOption.swift; sourceTree = "<group>"; };
 		228CA031F1435D2ADBBE7C80 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		2661336FEE4E869DF3490A76 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		26790881AAAAC102C8D380A0 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
+		2A0DA4384D8C16BB93FE46A4 /* TemplateStyleResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateStyleResolver.swift; sourceTree = "<group>"; };
 		2A62906D04A214AF3F2BD122 /* TwoShotTemplateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoShotTemplateView.swift; sourceTree = "<group>"; };
+		38F6D403C3E4B63879F6F713 /* PhotoFrameStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFrameStyle.swift; sourceTree = "<group>"; };
 		418ADC77701C964D485CF7BB /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
 		52D9F532DFE7CA8D838A4E61 /* PhotoboothTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoboothTests.swift; sourceTree = "<group>"; };
 		539713E3081D540906D0E021 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
@@ -61,6 +74,7 @@
 		63A0E2CC10570B095EC63DAA /* ResultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewModel.swift; sourceTree = "<group>"; };
 		74A04B931EE2C357D07DC838 /* ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultView.swift; sourceTree = "<group>"; };
 		7860C6F3B2FCBEE0B58B53DC /* PhotoboothSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoboothSession.swift; sourceTree = "<group>"; };
+		89528E5B567BA7C9062A96C0 /* StripBackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripBackgroundStyle.swift; sourceTree = "<group>"; };
 		91790A9D9B8A09BF58B1FE3F /* PhotoboothTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PhotoboothTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1347057F4451C1D404660FA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		A52D7EEDFCB8734FD23E7A2D /* ThreeShotTemplateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeShotTemplateView.swift; sourceTree = "<group>"; };
@@ -72,7 +86,9 @@
 		C61A536CB0DABEB156452239 /* PhotoboothApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoboothApp.swift; sourceTree = "<group>"; };
 		C7495A25C2A29411C53D1C27 /* ShotSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShotSelectionViewModel.swift; sourceTree = "<group>"; };
 		C83C524B85CA881F3BD605EA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		D1025D4697E4FA2EF554FE7A /* PhotoFilterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFilterService.swift; sourceTree = "<group>"; };
 		D21E8A2D23DE2D165B95A9AE /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
+		D91CC45E45774C15363E0CCB /* StylePreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StylePreviewCard.swift; sourceTree = "<group>"; };
 		D98CB5458DCF88EDF805A36D /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		DEBCB8214D0423DCE1B3230E /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		DF0B9612E227B09C4A4046D5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -105,7 +121,10 @@
 			isa = PBXGroup;
 			children = (
 				DEBCB8214D0423DCE1B3230E /* CameraPreviewView.swift */,
+				1670930E8A77572F9858357D /* OptionChip.swift */,
+				169D6EAB0C1EF800B0E0F86A /* PhotoSlotView.swift */,
 				B7887673F44D14E7EB7C813D /* ShotProgressView.swift */,
+				D91CC45E45774C15363E0CCB /* StylePreviewCard.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -115,7 +134,9 @@
 			children = (
 				539713E3081D540906D0E021 /* CameraService.swift */,
 				418ADC77701C964D485CF7BB /* PermissionService.swift */,
+				D1025D4697E4FA2EF554FE7A /* PhotoFilterService.swift */,
 				D21E8A2D23DE2D165B95A9AE /* PhotoLibraryService.swift */,
+				2A0DA4384D8C16BB93FE46A4 /* TemplateStyleResolver.swift */,
 				C00189A2CEC0CB24F70B6B25 /* TemplateRenderer.swift */,
 			);
 			path = Services;
@@ -135,8 +156,11 @@
 		3E81B15498CDBE25D061C244 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				1E4C17DCAB11F325F2A55C96 /* PhotoFilterOption.swift */,
+				38F6D403C3E4B63879F6F713 /* PhotoFrameStyle.swift */,
 				7860C6F3B2FCBEE0B58B53DC /* PhotoboothSession.swift */,
 				B43A1ED4D91F0B5B573655ED /* ShotConfiguration.swift */,
+				89528E5B567BA7C9062A96C0 /* StripBackgroundStyle.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -336,8 +360,13 @@
 				7D5EA008D200DDEE234EFF49 /* CameraViewModel.swift in Sources */,
 				046BA007DF63372C6539AF8F /* Color+Hex.swift in Sources */,
 				F182F78E1FC9A2B8518E23A4 /* OneShotTemplateView.swift in Sources */,
+				9A70C94A1BC77BF7F8D7B2FA /* OptionChip.swift in Sources */,
 				A7FAA037B016E0F3B03AAF29 /* PermissionService.swift in Sources */,
+				6D8F52042A6EF3F1A632B0E8 /* PhotoFilterOption.swift in Sources */,
+				748C084AFD69B06A337D2786 /* PhotoFilterService.swift in Sources */,
+				1107C9668B312E6FD9559EC4 /* PhotoFrameStyle.swift in Sources */,
 				46C03F66915C9EEC1154E6D2 /* PhotoLibraryService.swift in Sources */,
+				249770081D1A815A53BA60A6 /* PhotoSlotView.swift in Sources */,
 				ED900DCCD9DDC2ECCF293F72 /* PhotoboothApp.swift in Sources */,
 				36EE0DECAA6ADE53D404BCEE /* PhotoboothSession.swift in Sources */,
 				6996CB5058664299748FEA28 /* ResultView.swift in Sources */,
@@ -347,8 +376,11 @@
 				5D9F97F3462C24D2EF68C375 /* ShotSelectionView.swift in Sources */,
 				93F47B6D84ABE7373FB75594 /* ShotSelectionViewModel.swift in Sources */,
 				E7B42668B81B488AC55FDE26 /* SplashView.swift in Sources */,
+				18D8B6203922468A3134CF5D /* StylePreviewCard.swift in Sources */,
+				84E0A2F65FE2B7C3E3E95D14 /* StripBackgroundStyle.swift in Sources */,
 				2C4262D007EFD1D06D2CFD93 /* TemplateDecorations.swift in Sources */,
 				AC38009917CD20578BC1BAE8 /* TemplateRenderer.swift in Sources */,
+				83FC534F64D35A1D0DCBF9CC /* TemplateStyleResolver.swift in Sources */,
 				B0F52368F95938477440B534 /* ThreeShotTemplateView.swift in Sources */,
 				B6EE0CF186A3F5EF8DE368BE /* TwoShotTemplateView.swift in Sources */,
 			);
@@ -497,7 +529,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = FXJX9G3833;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Photobooth/Info.plist;
@@ -506,7 +538,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = nl.rogier.photobooth;
 				PRODUCT_NAME = Photostrip;
 				SDKROOT = iphoneos;
@@ -519,6 +551,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -529,7 +562,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Photobooth.app/Photobooth";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Photostrip.app/Photostrip";
 			};
 			name = Release;
 		};
@@ -540,7 +573,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = FXJX9G3833;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Photobooth/Info.plist;
@@ -549,7 +582,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = nl.rogier.photobooth;
 				PRODUCT_NAME = Photostrip;
 				SDKROOT = iphoneos;
@@ -562,6 +595,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -572,7 +606,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Photobooth.app/Photobooth";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Photostrip.app/Photostrip";
 			};
 			name = Debug;
 		};

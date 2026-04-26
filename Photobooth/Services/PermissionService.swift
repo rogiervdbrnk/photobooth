@@ -1,5 +1,6 @@
 import AVFoundation
 import Photos
+import Foundation
 
 /// Beheert alle toestemmingsverzoeken voor camera en fotobibliotheek.
 final class PermissionService {
@@ -11,9 +12,9 @@ final class PermissionService {
         var errorDescription: String? {
             switch self {
             case .cameraDenied:
-                return "Cameratoegang is geweigerd. Ga naar Instellingen om dit te wijzigen."
+                return String(localized: "permission_error.camera_denied")
             case .photoLibraryDenied:
-                return "Toegang tot de Fotobibliotheek is geweigerd. Ga naar Instellingen om dit te wijzigen."
+                return String(localized: "permission_error.photo_library_denied")
             }
         }
     }

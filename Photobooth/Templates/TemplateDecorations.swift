@@ -48,3 +48,51 @@ struct StarDecorationView: View {
         .allowsHitTesting(false)
     }
 }
+
+/// Voegt kleine sprinkle-achtige decoratie toe aan een vrolijke achtergrond.
+struct SprinklesPatternView: View {
+    private struct Sprinkle: Identifiable {
+        let id = UUID()
+        let x: CGFloat
+        let y: CGFloat
+        let width: CGFloat
+        let rotation: Double
+        let color: Color
+    }
+
+    private let sprinkles: [Sprinkle] = {
+        let colors: [Color] = [
+            Color(hex: "#FF8FB8"),
+            Color(hex: "#FFD166"),
+            Color(hex: "#A8E6CF"),
+            Color(hex: "#8EC5FF"),
+            Color(hex: "#C9A7FF")
+        ]
+
+        return (0..<60).map { _ in
+            Sprinkle(
+                x: CGFloat.random(in: 0...400),
+                y: CGFloat.random(in: 0...1300),
+                width: CGFloat.random(in: 10...18),
+                rotation: Double.random(in: -45...45),
+                color: colors.randomElement()!
+            )
+        }
+    }()
+
+    var body: some View {
+        Canvas { context, _ in
+            for sprinkle in sprinkles {
+                var transform = CGAffineTransform.identity
+                transform = transform
+                    .translatedBy(x: sprinkle.x, y: sprinkle.y)
+                    .rotated(by: sprinkle.rotation * .pi / 180)
+
+                let rect = CGRect(x: -sprinkle.width / 2, y: -2, width: sprinkle.width, height: 4)
+                let path = RoundedRectangle(cornerRadius: 2).path(in: rect).applying(transform)
+                context.fill(path, with: .color(sprinkle.color.opacity(0.35)))
+            }
+        }
+        .allowsHitTesting(false)
+    }
+}

@@ -70,6 +70,28 @@ struct CameraView: View {
                     
                     Spacer()
                     
+                    // Capture button
+                    if !viewModel.isCapturing {
+                        Button {
+                            viewModel.startCountdownAndCapture()
+                        } label: {
+                            Circle()
+                                .fill(.white)
+                                .frame(width: 72, height: 72)
+                                .overlay(
+                                    Circle()
+                                        .stroke(.white.opacity(0.4), lineWidth: 4)
+                                        .frame(width: 86, height: 86)
+                                )
+                        }
+                        .padding(.bottom, 32)
+                    } else {
+                        // Placeholder to keep layout stable during capture
+                        Color.clear
+                            .frame(width: 72, height: 72)
+                            .padding(.bottom, 32)
+                    }
+                    
                 }
             }
             .onPreferenceChange(TopBarMaxYKey.self) { topBarMaxY = $0 }
@@ -77,11 +99,11 @@ struct CameraView: View {
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: viewModel.countdownValue)
             .onAppear { viewModel.onAppear() }
             .onDisappear { viewModel.onDisappear() }
-            .alert("Fout", isPresented: Binding(
+            .alert(String(localized: "alert.error_title"), isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.error = nil } }
             )) {
-                Button("OK") { viewModel.error = nil }
+                Button(String(localized: "common.ok")) { viewModel.error = nil }
             } message: {
                 Text(viewModel.error ?? "")
             }

@@ -1,4 +1,5 @@
 import AVFoundation
+import Foundation
 import UIKit
 
 /// Beheert de AVFoundation capture session en het nemen van foto's via de frontcamera.
@@ -92,10 +93,14 @@ final class CameraService: NSObject {
 
         var errorDescription: String? {
             switch self {
-            case .deviceNotFound:  return "Frontcamera niet gevonden op dit apparaat."
-            case .cannotAddInput:  return "Kan de camera niet verbinden."
-            case .cannotAddOutput: return "Kan de foto-uitvoer niet instellen."
-            case .captureFailed:   return "Het maken van de foto is mislukt."
+            case .deviceNotFound:
+                return String(localized: "camera_error.device_not_found")
+            case .cannotAddInput:
+                return String(localized: "camera_error.cannot_add_input")
+            case .cannotAddOutput:
+                return String(localized: "camera_error.cannot_add_output")
+            case .captureFailed:
+                return String(localized: "camera_error.capture_failed")
             }
         }
     }
